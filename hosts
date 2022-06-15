@@ -1,0 +1,7 @@
+[flatcar_nodes]
+172.17.0.21 ansible_hostname=node01.secitec.net
+172.17.0.22 ansible_hostname=node02.secitec.net
+172.17.0.23 ansible_hostname=node03.secitec.net
+
+[flatcar_nodes:vars]
+ansible_python_interpreter=/home/core/pypy3.9-v7.3.9-linux64/bin/python

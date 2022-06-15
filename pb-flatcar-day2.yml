@@ -1,0 +1,37 @@
+- name: day2_operations_flatcar_linux_get_python
+  hosts: flatcar_nodes
+  gather_facts: no
+  tasks:
+  - name: get python
+#    raw: 'test ! -f {{ansible_python_interpreter}} && curl https://downloads.python.org/pypy/pypy3.9-v7.3.9-linux64.tar.bz2 | tar -jxf - '
+    raw: curl https://downloads.python.org/pypy/pypy3.9-v7.3.9-linux64.tar.bz2 | tar -jxf -
+
+- name: day2_operations_flatcar_linux
+  hosts: flatcar_nodes
+  become: yes
+  tasks:
+  - name: Enable service update-engine
+    ansible.builtin.systemd:
+      name: update-engine.service
+      enabled: yes
+      masked: no
+      state: started
+  - name: Disable service locksmithd
+    ansible.builtin.systemd:
+      name: locksmithd.service
+      enabled: no
+      masked: yes     
+      state: stopped
+  - name: Template a file to /etc/systemd/network/static.network
+    ansible.builtin.template:
+      src: static_network.j2
+      dest: /etc/systemd/network/static.network
+      owner: root
+      group: root
+      mode: '0644'
+    notify:
+    - restart systemd-networkd
+
+  handlers:
+    - name: restart systemd-networkd
+      service: name=systemd-networkd state=restarted    
